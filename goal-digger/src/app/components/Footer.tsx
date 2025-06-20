@@ -17,14 +17,24 @@ export default function Footer() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          <Image
-            className="rounded-full"
-            aria-hidden
-            src="/grim-repo.jpg"
-            alt="Grim repo octocat icon"
-            width={75}
-            height={75}
-          />
+          {/* Light mode image */}
+                <Image
+                    className="rounded-full block dark:hidden"
+                    aria-hidden
+                    src="/ironcat.jpg"
+                    alt="Ironcat octocat icon"
+                    width={75}
+                    height={75}
+                />
+                {/* Dark mode image */}
+                <Image
+                    className="rounded-full hidden dark:block"
+                    aria-hidden
+                    src="/grim-repo.jpg"
+                    alt="Grim repo octocat icon"
+                    width={75}
+                    height={75}
+                />
         </a>
         <a
           className="flex items-center gap-2 hover:underline hover:underline-offset-4"
