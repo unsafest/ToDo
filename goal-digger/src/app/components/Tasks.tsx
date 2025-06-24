@@ -1,14 +1,9 @@
 'use client';
 import { createClient } from '@/utils/supabase/client';
 import { useState, useEffect } from 'react';
+import { Task } from '@/types/task'; 
 
-interface Task {
-    task_id: number;
-    title: string;
-    description?: string;
-    completed: boolean;
-    created_at: string;
-}
+
 
 export default function Tasks() {
     const [tasks, setTasks] = useState<Task[]>([]);
