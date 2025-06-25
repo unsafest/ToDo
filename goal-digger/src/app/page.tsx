@@ -1,6 +1,5 @@
 import Footer from "@/app/components/Footer";
-import Tasks from "@/app/components/Tasks";
-import TaskForm from "@/app/components/TaskForm";
+import TaskMannager from "./components/TaskManager";
 
 
 export default function Home() {
@@ -11,8 +10,8 @@ export default function Home() {
           <span className="text-4xl font-bold">Goal Digger</span>
           <span className="text-lg text-gray-500">Your personal task manager</span>
         </h1>
-      <TaskForm />
-      <Tasks />
+      
+        <TaskMannager />
 
       </main>
       
