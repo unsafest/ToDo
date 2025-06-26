@@ -4,4 +4,5 @@ export interface Task {
     description?: string;
     completed: boolean;
     created_at: string;
+    list_id: number;
 }
