@@ -1,5 +1,5 @@
 import Footer from "@/app/components/Footer";
-import TaskMannager from "./components/TaskManager";
+import TaskManager from "./components/TaskManager";
 
 
 
@@ -12,7 +12,7 @@ export default function Home() {
           <span className="text-lg text-gray-500">Your personal task manager</span>
         </h1>
       
-        <TaskMannager />
+        <TaskManager />
 
       </main>
       
