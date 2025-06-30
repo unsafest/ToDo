@@ -4,6 +4,8 @@ import { createClient } from '@/utils/supabase/client';
 import { Task } from '@/types/task';
 import TaskForm from './TaskForm';
 import Tasks from './Tasks';
+import type { User } from '@supabase/supabase-js';
+
 
 const supabase = createClient();
 
@@ -25,19 +27,40 @@ const TaskMannager = () => {
         fetchTasks()
     }, [])
 
+
+    const [ user, setUser ] = useState<User | null>(null)
+    
+    useEffect(() => {
+        const fetchUser = async () => {
+            const { data, error } = await supabase.auth.getUser();
+            if (error) {
+                console.error('Error fetching user:', error);
+            } else {
+                setUser(data?.user);
+            }
+        };
+        fetchUser();
+    }, []);
+
     const addTask = async (newTask: Partial<Task>) => {
+        if (!user?.id) {
+            setError('User not loaded. Please try again.');
+            return;
+        }
         const { data, error } = await supabase
             .from('tasks')
             .insert([{
                 title: newTask.title,
-                description: newTask.description
+                description: newTask.description || '',
+                completed: newTask.completed ?? false,
+                user_id: user.id
             }])
-            .select()
+            .select();
         if (error) {
-            console.error('Error adding task:', error);
-            setError(error.message);
-        } else {
-            setTasks([data[0], ...tasks])
+            console.error('Error adding task:', error, { newTask, user });
+            setError(error.message || 'Unknown error');
+        } else if (data && data.length > 0) {
+            setTasks([data[0], ...tasks]);
         }
     }
 
