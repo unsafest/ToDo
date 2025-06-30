@@ -16,7 +16,7 @@ export default function Header() {
             if (!error) setUser(data.user);
         }
         fetchUser()
-    }, [])
+    }, [supabase.auth])
 
     const logout = async () => {
         await supabase.auth.signOut();
