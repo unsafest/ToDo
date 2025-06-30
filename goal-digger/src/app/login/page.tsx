@@ -2,7 +2,7 @@ import { login, signup } from './actions'
 
 export default function LoginPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-green-100 to-red-200">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-200 to-red-300">
       <form className="flex flex-col gap-4 w-full max-w-md bg-white shadow-lg rounded-xl p-8 border border-gray-200">
         <h2 className="text-2xl font-bold text-center mb-4 text-blue-700">Welcome</h2>
         <label htmlFor="email" className="text-sm font-semibold text-gray-700">Email</label>

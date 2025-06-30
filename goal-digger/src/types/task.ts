@@ -5,4 +5,5 @@ export interface Task {
     completed: boolean;
     created_at: string;
     list_id: number;
+    due_date?: string;
 }
