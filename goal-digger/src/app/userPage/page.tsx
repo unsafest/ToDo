@@ -49,7 +49,7 @@ export default function UserPage() {
     if (!user) return <div className="text-center py-8 text-red-500">User not found.</div>
 
     return (
-        <>
+        <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
         <Header />
         <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow border">
             <h2 className="text-2xl font-bold mb-4">{email}</h2>
@@ -82,8 +82,7 @@ export default function UserPage() {
                 </button>
                 {message && <p className="text-center text-green-600">{message}</p>}
             </form>
-            
         </div>
-        </>
+        </div>
     )
 }
