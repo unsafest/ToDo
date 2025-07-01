@@ -16,7 +16,7 @@ export default function Header() {
             if (!error) setUser(data.user);
         }
         fetchUser()
-    }, [])
+    }, [supabase.auth])
 
     const logout = async () => {
         await supabase.auth.signOut();
@@ -38,7 +38,7 @@ export default function Header() {
                     <li>
                         <Link href="/userPage" className="flex items-center gap-2 text-gray-700 hover:text-indigo-600 transition-colors font-medium">
                             <span className="inline-block rounded-full bg-indigo-100 text-indigo-600 px-3 py-1 text-xs font-semibold">
-                                {user ? (user.user_metadata?.name || user.email) : "User"}
+                                {user ? (user.user_metadata?.name ?? user.email) : "User"}
                             </span>
                         </Link>
                     </li>
