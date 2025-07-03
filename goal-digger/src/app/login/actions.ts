@@ -17,7 +17,7 @@ const signupSchema = z.object({
   password: z.string()
     .min(6, { message: 'Password must be at least 6 characters long' })
     .max(32, { message: 'Password must be at most 32 characters long' })
-    .regex(/^(?=.*[\d\W]).{6,32}$/, { message: 'Password must be 6-32 characters long, contain at least one number or special character' }),
+    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,32}$/, { message: 'Password must be 6-32 characters long, contain lowercase, uppercase letters and digits' }),
 })
 
 export async function login(formData: FormData) {
