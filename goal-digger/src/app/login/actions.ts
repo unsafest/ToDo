@@ -32,13 +32,13 @@ export async function login(formData: FormData) {
   if (!result.success) {
     // Format zod errors into a single string or object
     const errors = result.error.issues.map(issue => issue.message).join(', ')
-    return { error: errors}
+    return { error: errors }
   }
 
   const { error } = await supabase.auth.signInWithPassword(data)
 
   if (error) {
-    redirect('/error')
+    return { error: error.message }
   }
 
   revalidatePath('/', 'layout')
@@ -65,7 +65,7 @@ export async function signup(formData: FormData) {
   const { error } = await supabase.auth.signUp(data)
 
   if (error) {
-    redirect('/error')
+    return { error: error.message }
   }
 
   revalidatePath('/', 'layout')
