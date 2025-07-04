@@ -1,88 +1,109 @@
 'use client'
-import { useEffect, useState } from 'react'
-import { createClient } from '@/utils/supabase/client'
-import type { User } from '@supabase/supabase-js'
-import { useRouter } from 'next/navigation' 
+import { useState, useEffect } from "react"
+import { getUser, updateUserProfile } from "./actions"
 import Header from "../components/Header"
 
-export default function UserPage() {
-    const [user, setUser] = useState<User | null>(null)
-    const [name, setName] = useState('')
-    const [email, setEmail] = useState('')
-    const [loading, setLoading] = useState(true)
-    const [message, setMessage] = useState<string | null>(null)
-    const supabase = createClient()
-    const router = useRouter() 
+type UserData = {
+    email?: string
+    created_at: string
+    displayName: string
+}
 
+export default function UserPage() {
+    const [user, setUser] = useState<UserData | null>(null)
+    const [message, setMessage] = useState('')
+    const [isError, setIsError] = useState(false)
+    const [isLoading, setIsLoading] = useState(true)
+    
     useEffect(() => {
-        const fetchUser = async () => {
-            setLoading(true)
-            const { data, error } = await supabase.auth.getUser()
-            if (!error && data.user) {
-                setUser(data.user)
-                setName(data.user.user_metadata?.name ?? '')
-                setEmail(data.user.email ?? '')
-            } else {
-                router.replace('/login') 
+        async function fetchUser() {
+            try {
+                const userData = await getUser()
+                setUser(userData)
+            } catch (error) {
+                // Handle error, e.g., redirect to login
+                console.error("Failed to fetch user data:", error)
+            } finally {
+                setIsLoading(false)
             }
-            setLoading(false)
         }
         fetchUser()
-    }, [router, supabase.auth])
+    }, [])
 
-    const handleUpdate = async (e: React.FormEvent) => {
-        e.preventDefault()
-        setMessage(null)
-        setLoading(true)
-        const { error } = await supabase.auth.updateUser({
-            data: { name }
-        })
-        if (error) {
-            setMessage('Failed to update user info.')
-        } else {
-            setMessage('Profile updated!')
+    async function handleSubmit(formData: FormData) {
+        setMessage('')
+        setIsError(false)
+
+        const result = await updateUserProfile(formData)
+
+        if (result?.error) {
+            setMessage(result.error)
+            setIsError(true)
+        } else if (result?.success) {
+            setMessage('Profile updated successfully!')
+            const userData = await getUser()
+            setUser(userData)
         }
-        setLoading(false)
     }
 
-    if (loading) return <div className="text-center py-8">Loading...</div>
-    if (!user) return <div className="text-center py-8 text-red-500">User not found.</div>
+    if (isLoading) return <div>Loading...</div>
 
     return (
-        <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-        <Header />
-        <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow border">
-            <h2 className="text-2xl font-bold mb-4">{email}</h2>
-            <form onSubmit={handleUpdate} className="flex flex-col gap-4">
-                <label className="font-medium">
-                    Display name
-                    <input
-                        className="block w-full mt-1 p-2 border rounded"
-                        type="text"
-                        value={name}
-                        onChange={e => setName(e.target.value)}
-                        placeholder="Your name"
-                    />
-                </label>
-                <label className="font-medium">
-                    Email
-                    <input
-                        className="block w-full mt-1 p-2 border rounded bg-gray-100"
-                        type="email"
-                        value={email}
-                        disabled
-                    />
-                </label>
-                <button
-                    type="submit"
-                    className="bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition-colors font-semibold"
-                    disabled={loading}
-                >
-                    {loading ? 'Updating...' : 'Update Profile'}
-                </button>
-                {message && <p className="text-center text-green-600">{message}</p>}
-            </form>
-        </div>
+       <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+            <Header />
+            <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow border">
+                <h2 className="text-2xl font-bold mb-4">{user?.email}</h2>
+                <h3 className="text-lg mb-2">Display Name: {user?.displayName || 'Not set'}</h3>
+                <h4 className="text-lg mb-2">
+                    Member since {user?.created_at? new Date(user.created_at).toLocaleDateString() : '...'}
+                </h4>
+                
+                <form action={handleSubmit} className="flex flex-col gap-4">
+                    <div>
+                        <label htmlFor="displayName" className="block mb-1">Display Name</label>
+                        <input 
+                            type="text" 
+                            name="displayName"
+                            id="displayName"
+                            defaultValue={user?.displayName}
+                            className="w-full p-2 border rounded"
+                        />
+                    </div>
+                    
+                    <div>
+                        <label htmlFor="password" className="block mb-1">New Password</label>
+                        <input 
+                            type="password" 
+                            name="password"
+                            id="password"
+                            className="w-full p-2 border rounded"
+                        />
+                    </div>
+                    
+                    <div>
+                        <label htmlFor="confirmPassword" className="block mb-1">Confirm Password</label>
+                        <input 
+                            type="password" 
+                            name="confirmPassword"
+                            id="confirmPassword"
+                            className="w-full p-2 border rounded"
+                        />
+                    </div>
+                    
+                    <button 
+                        type="submit"
+                        className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+                    >
+                        Update Profile
+                    </button>
+                    
+                    {message && (
+                        <p className={isError ? "text-red-500" : "text-green-500"}>
+                            {message}
+                        </p>
+                    )}
+                </form>
+            </div>
         </div>
     )
 }
