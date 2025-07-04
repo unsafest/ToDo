@@ -1,28 +1,25 @@
 'use server'
-import { createClient } from '@/utils/supabase/client'
+import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import { z } from 'zod'
 
 const UpdateUserSchema = z.object({
-    displayName: z.string().min(2, 'Display name is required, min 2 char').optional(),
+    displayName: z.string().min(2, 'Display name must be at least 2 characters').optional().or(z.literal('')),
     password: z.string()
-        .min(6, 'Password is required, min 6 char')
+        .min(6, 'Password must be 6-32 characters long, contain lowercase, uppercase letters and digits')
         .max(32, 'Password must be less than 32 char')
         .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,32}$/, { message: 'Password must be 6-32 characters long, contain lowercase, uppercase letters and digits' })
-        .optional(),
-    confirmPassword: z.string()
-        .min(6, 'Confirm password is required, min 6 char')
-        .max(32, 'Confirm password must be less than 32 char')
-        .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,32}$/, { message: 'Confirm password must be 6-32 characters long, contain lowercase, uppercase letters and digits' })
-        .optional(),
+        .optional()
+        .or(z.literal('')),
+    confirmPassword: z.string().optional().or(z.literal('')),
 })
-.refine((data) => !data.password || data.password === data.confirmPassword, {
+.refine((data) => data.password === data.confirmPassword, {
     message: 'Passwords do not match',
     path: ['confirmPassword'], 
 })
 
 export async function getUser() {
-    const supabase = createClient()
+    const supabase = await createClient()
     const { data: { user }, error } = await supabase.auth.getUser()
 
     if (error || !user) {
@@ -36,7 +33,12 @@ export async function getUser() {
 }
 
 export async function updateUserProfile(formData: FormData) {
-    const user = await getUser()
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    
+    if (!user) {
+        return { error: 'User not authenticated' }
+    }
 
     const data = {
         displayName: formData.get('displayName') as string,
@@ -47,24 +49,25 @@ export async function updateUserProfile(formData: FormData) {
     const result = UpdateUserSchema.safeParse(data)
     if (!result.success) {
         const errors = result.error.issues.map(issue => issue.message).join(', ')
-        return { error: errors}
+        return { error: errors }
     }
 
-    const supabase = createClient()
     let errorMsg = ''
 
-    if (data.displayName && data.displayName !== user.displayName) {
+    // Only update display name if it has changed and is not empty
+    if (result.data.displayName && result.data.displayName !== user.user_metadata?.name) {
         const { error } = await supabase.auth.updateUser({
-            data: { name: data.displayName }
+            data: { name: result.data.displayName }
         })
-        if (error) errorMsg += error.message + ' '
+        if (error) errorMsg += `Display name update failed: ${error.message} `
     }
 
-    if (data.password) {
+    // Only update password if a new one is provided
+    if (result.data.password) {
         const { error } = await supabase.auth.updateUser({
-            password: data.password
+            password: result.data.password
         })
-        if (error) errorMsg += error.message + ' '  
+        if (error) errorMsg += `Password update failed: ${error.message}`
     }
     
     if (errorMsg) {
