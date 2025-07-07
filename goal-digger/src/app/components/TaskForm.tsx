@@ -1,25 +1,31 @@
 'use client'
 import React, { useState } from 'react';
-import { Task } from '@/types/task'; 
+import { Task } from '@/types/task';
 
 interface TaskFormProps {
    readonly onAddTask: (task: Partial<Task>) => void
+   readonly availableLists?: Array<{ id: number, name: string }>
 }
 
-export default function TaskForm({ onAddTask }: TaskFormProps) {
+export default function TaskForm({ onAddTask, availableLists = [] }: TaskFormProps) {
     const [task, setTask] = useState<Partial<Task>>({
         title: '',
-        description: ''
+        description: '',
+        created_at: '',
+        list_id: undefined
     })
 
-    
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setTask({ ...task, [e.target.name]: e.target.value })
+    }
+    const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const value = e.target.value === '' ? undefined : Number(e.target.value)
+        setTask({ ...task, [e.target.name]: value })
     }
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         onAddTask(task);
-        setTask({ title: '', description: '' })
+        setTask({ title: '', description: '', due_date: '', list_id: undefined })
     }
 
     return (
@@ -44,6 +50,26 @@ export default function TaskForm({ onAddTask }: TaskFormProps) {
                     value={task.description ?? ''}
                     onChange={handleChange}
                 />
+                <input
+                    name="due_date"
+                    type="date"
+                    className="rounded-lg shadow-sm border-gray-300 w-full p-2"
+                    value={task.due_date ?? ''}
+                    onChange={handleChange}
+                />
+                <select
+                    name="list_id"
+                    className="rounded-lg shadow-sm border-gray-300 w-full p-2"
+                    value={task.list_id ?? ''}
+                    onChange={handleSelectChange}
+                >
+                    <option value="">No list selected (Optional)</option>
+                    {availableLists.map(list => (
+                        <option key={list.id} value={list.id}>
+                            {list.name}
+                        </option>
+                    ))}
+                </select>
             </fieldset>
             <button 
                 type="submit" 

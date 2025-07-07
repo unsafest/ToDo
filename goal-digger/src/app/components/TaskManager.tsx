@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import { Task } from '@/types/task';
+import { List } from '@/types/list';
 import TaskForm from './TaskForm';
 import Tasks from './Tasks';
 import type { User } from '@supabase/supabase-js';
@@ -9,27 +10,21 @@ import type { User } from '@supabase/supabase-js';
 
 const supabase = createClient();
 
-const TaskMannager = () => {
+const TaskManager = () => {
     const [tasks, setTasks] = useState<Task[]>([])
+    const [lists, setLists] = useState<List[]>([])
     const [error, setError] = useState<string | null>(null)
+    const [user, setUser] = useState<User | null>(null)
+    const [showModal, setShowModal] = useState(false)
 
-    useEffect(() => {
-        const fetchTasks = async () => {
-            const { data, error } = await supabase
-                .from('tasks')
-                .select('*')
-            if (error) {
-                setError(error.message);
-            } else {
-                setTasks(data)
-            }
-        }
-        fetchTasks()
-    }, [])
+    // helper function to transform lists
+    const availableLists = lists.map(list => ({
+        id: list.list_id,
+        name: list.title
+    }));
 
-
-    const [ user, setUser ] = useState<User | null>(null)
     
+    // Fetch user on mount
     useEffect(() => {
         const fetchUser = async () => {
             const { data, error } = await supabase.auth.getUser();
@@ -42,6 +37,48 @@ const TaskMannager = () => {
         fetchUser();
     }, []);
 
+    
+    useEffect(() => {
+        if (!user?.id) return;
+        
+        const fetchTasks = async () => {
+            const { data, error } = await supabase
+                .from('tasks')
+                .select('*')
+                .eq('user_id', user?.id)
+            if (error) {
+                setError(error.message);
+            } else {
+                setTasks(data || [])
+            }
+        }
+        fetchTasks()
+    }, [user])
+
+    useEffect(() => {
+        if (!user?.id) return;
+
+        const fetchLists = async () => {
+            try {
+                const { data, error } = await supabase
+                    .from('lists')
+                    .select('list_id, title, created_at')
+                    .eq('user_id', user.id);
+                if (error) {
+                    console.error('Error fetching lists:', error);
+                    setError(error.message);
+                    return;
+                }
+                setLists(data || [])
+                
+            } catch (error) {
+                console.error('Error fetching lists:', error);
+                setError('Failed to load lists');
+            }
+        };
+        fetchLists();
+    }, [user]);
+
     const addTask = async (newTask: Partial<Task>) => {
         if (!user?.id) {
             setError('User not loaded. Please try again.');
@@ -51,16 +88,19 @@ const TaskMannager = () => {
             .from('tasks')
             .insert([{
                 title: newTask.title,
-                description: newTask.description || '',
+                description: newTask.description ?? '',
                 completed: newTask.completed ?? false,
-                user_id: user.id
+                user_id: user.id,
+                list_id: newTask.list_id ?? null,
+                due_date: newTask.due_date ?? null
             }])
-            .select();
+            .select('*')
         if (error) {
             console.error('Error adding task:', error, { newTask, user });
             setError(error.message || 'Unknown error');
         } else if (data && data.length > 0) {
-            setTasks([data[0], ...tasks]);
+            setTasks([data[0], ...tasks])
+            setShowModal(false)
         }
     }
 
@@ -92,12 +132,33 @@ const TaskMannager = () => {
         }
     }
 
+    
     return (
         <div className="flex flex-col items-center gap-3 item-center w-full max-w-md">
-            <TaskForm onAddTask={addTask} />
+            <button 
+                onClick={() => setShowModal(true)}
+                className="px-4 py-2 w-full bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold shadow-lg"
+            >
+                Create Task
+            </button>
             <Tasks tasks={tasks} error={error} onToggleTask={toggleTaskCompletion} onDeleteTask={handleDeleteTask} />
+        
+            {/* Show task form */}
+            {showModal && (
+                <div className="fixed inset-0 bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full mx-4">
+                        <TaskForm onAddTask={addTask} availableLists={availableLists} /> 
+                        <button 
+                            onClick={() => setShowModal(false)}
+                            className="mt-4 px-3 py-2 w-full bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
+                        >
+                            Close
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
 
-export default TaskMannager;
+export default TaskManager;

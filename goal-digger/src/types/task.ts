@@ -4,6 +4,6 @@ export interface Task {
     description?: string;
     completed: boolean;
     created_at: string;
-    list_id: number;
+    list_id?: number;
     due_date?: string;
 }
