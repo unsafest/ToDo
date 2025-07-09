@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react"
 import { getUser, updateUserProfile, deleteAccount } from "./actions"
 import Header from "../components/Header"
+import { createClient } from "@/utils/supabase/client"
 
 type UserData = {
   email?: string
@@ -15,6 +16,7 @@ export default function UserPage() {
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(true)
   const [snackbar, setSnackbar] = useState<{ visible: boolean, text: string }>({ visible: false, text: '' })
+  const supabase = createClient()
 
   // Show snackbar when loading
   useEffect(() => {
@@ -67,6 +69,7 @@ export default function UserPage() {
       const userData = await getUser()
       setUser(userData)
 
+      window.location.reload() // Reload to reflect changes
     }
   }
 
@@ -80,6 +83,13 @@ export default function UserPage() {
       if (result?.error) {
         setError(result.error)
         setMessage('')
+      } else if (result?.success) {
+        setMessage('Account deleted successfully. Redirecting...')
+        
+        setTimeout(async () => {
+          await supabase.auth.signOut()
+          window.location.href = '/login'
+        }, 3000)
       }
     }
   }

@@ -1,6 +1,6 @@
 'use client';
 import { Task } from '@/types/task';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 
 interface TasksProps {
   readonly tasks: Task[]
@@ -12,7 +12,6 @@ interface TasksProps {
 
 export default function Tasks({ tasks, error, onToggleTask, onDeleteTask, onEditTask }: TasksProps) {
   const [openDropdown, setOpenDropdown] = useState<number | null>(null)
-  const dropdownRef = useRef<HTMLDivElement>(null)
 
   const toggleDropdown = (taskId: number) => {
     setOpenDropdown(openDropdown === taskId ? null : taskId)
@@ -22,7 +21,9 @@ export default function Tasks({ tasks, error, onToggleTask, onDeleteTask, onEdit
   // This effect runs once when the component mounts
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      // Check if the click is outside any dropdown
+      const clickedElement = event.target as HTMLElement
+      if (!clickedElement.closest('[data-dropdown]')) {
         setOpenDropdown(null)
       }
     }
@@ -69,16 +70,12 @@ export default function Tasks({ tasks, error, onToggleTask, onDeleteTask, onEdit
                 </p>
               )}
               <p className="text-xs text-gray-400 mt-1">
-                Created: {new Date(task.created_at).toLocaleString()}
+                Created: {new Date(task.created_at).toLocaleDateString()}
+                {task.due_date && ` — Due: ${new Date(task.due_date).toLocaleDateString()}`}
               </p>
-              {task.due_date && (
-                <p className="text-xs text-gray-400 mt-1">
-                  Due: {new Date(task.due_date).toLocaleDateString()}
-                </p>
-              )}
               {error && <p className="text-red-500">{error}</p>}
             </div>
-            <div ref={dropdownRef} className="relative ml-auto">
+            <div className="relative ml-auto" data-dropdown>
               <button
                 className="p-1 rounded-full hover:bg-gray-100"
                 onClick={() => toggleDropdown(task.task_id)}

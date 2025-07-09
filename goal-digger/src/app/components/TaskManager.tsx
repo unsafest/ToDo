@@ -93,7 +93,7 @@ const TaskManager = () => {
         completed: newTask.completed ?? false,
         user_id: user.id,
         list_id: newTask.list_id ?? null,
-        due_date: newTask.due_date ?? null
+        due_date: newTask.due_date && newTask.due_date.trim() !== '' ? newTask.due_date : null
       }])
       .select('*')
     if (error) {
@@ -149,7 +149,7 @@ const TaskManager = () => {
       .update({
         title: updatedTask.title,
         description: updatedTask.description ?? '',
-        due_date: updatedTask.due_date ?? null,
+        due_date: updatedTask.due_date && updatedTask.due_date.trim() !== '' ? updatedTask.due_date : null,
         list_id: updatedTask.list_id ?? null
       })
       .eq('task_id', editingTask.task_id)
@@ -170,17 +170,26 @@ const TaskManager = () => {
   return (
     <div className="flex flex-col items-center gap-3 item-center w-full max-w-md">
       <button
-        onClick={() => setShowModal(true)}
+        onClick={() => {
+          setShowModal(true)
+          setError(null)
+          setEditingTask(null)
+        }}
         className="px-4 py-2 w-full bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold shadow-lg"
       >
         Create Task
       </button>
-      <Tasks tasks={tasks} error={error} onToggleTask={toggleTaskCompletion} onDeleteTask={handleDeleteTask} onEditTask={handleEditTask} />
+      <Tasks tasks={tasks} error={null} onToggleTask={toggleTaskCompletion} onDeleteTask={handleDeleteTask} onEditTask={handleEditTask} />
 
       {/* Show task form */}
       {showModal && (
         <div className="fixed inset-0 bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full mx-4">
+            {error && (
+              <div className="mb-4 p-3 bg-red-100 text-red-800 rounded-lg">
+                {error}
+              </div>
+            )}
             <TaskForm
               onAddTask={editingTask ? updateTask : addTask}
               availableLists={availableLists}

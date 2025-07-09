@@ -97,7 +97,7 @@ export default function TaskForm({ onAddTask, availableLists = [], editingTask, 
                 type="submit" 
                 className="rounded border-gray-300 bg-blue-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
             >
-                Add Task
+                {isEditing ? 'Update Task' : 'Add Task'}
             </button>
         </form>
     )

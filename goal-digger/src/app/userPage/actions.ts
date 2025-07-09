@@ -99,8 +99,7 @@ export async function deleteAccount() {
         }
 
         // Sign out and redirect
-        await supabase.auth.signOut()
-        redirect('/login')
+        return { success: true, message: 'Account deleted successfully' }
 
     } catch (error) {
         return { error: `An unexpected error occurred during account deletion: ${error instanceof Error ? error.message : 'Unknown error'}` }   
