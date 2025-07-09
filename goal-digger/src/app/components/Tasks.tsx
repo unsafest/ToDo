@@ -7,9 +7,10 @@ interface TasksProps {
   readonly error: string | null
   readonly onToggleTask: (taskId: number, completed: boolean) => void
   readonly onDeleteTask: (taskId: number) => void
+  readonly onEditTask: (taskId: number) => void
 }
 
-export default function Tasks({ tasks, error, onToggleTask, onDeleteTask }: TasksProps) {
+export default function Tasks({ tasks, error, onToggleTask, onDeleteTask, onEditTask }: TasksProps) {
   const [openDropdown, setOpenDropdown] = useState<number | null>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
@@ -89,7 +90,7 @@ export default function Tasks({ tasks, error, onToggleTask, onDeleteTask }: Task
               {openDropdown === task.task_id && (
                 <div className="absolute left-1/2 transform -translate-x-1/2 top-8 w-32 bg-transparent rounded-lg flex flex-col gap-1 z-20">
                   <button
-                    onClick={() => task.task_id}
+                    onClick={() => onEditTask(task.task_id)}
                     className="w-full px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg"
                     aria-label={`Edit task ${task.title}`}
                   >

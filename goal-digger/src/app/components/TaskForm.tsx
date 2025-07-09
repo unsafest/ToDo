@@ -1,19 +1,41 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Task } from '@/types/task';
 
 interface TaskFormProps {
    readonly onAddTask: (task: Partial<Task>) => void
    readonly availableLists?: Array<{ id: number, name: string }>
+   readonly editingTask?: Task | null
+   readonly isEditing?: boolean
 }
 
-export default function TaskForm({ onAddTask, availableLists = [] }: TaskFormProps) {
+export default function TaskForm({ onAddTask, availableLists = [], editingTask, isEditing }: TaskFormProps) {
     const [task, setTask] = useState<Partial<Task>>({
         title: '',
         description: '',
         created_at: '',
         list_id: undefined
     })
+
+    // Use effect to populate form fields when editing a task
+    useEffect(() => {
+        if (isEditing && editingTask) {
+            setTask({
+                title: editingTask.title,
+                description: editingTask.description ?? '',
+                due_date: editingTask.due_date ?? '',
+                list_id: editingTask.list_id ?? undefined
+            });
+        } else {
+            // Reset task state when not editing
+            setTask({
+                title: '',
+                description: '',
+                due_date: '',
+                list_id: undefined
+            })
+        }
+    }, [isEditing, editingTask]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setTask({ ...task, [e.target.name]: e.target.value })
@@ -34,7 +56,7 @@ export default function TaskForm({ onAddTask, availableLists = [] }: TaskFormPro
             onSubmit={handleSubmit}
         >
             <fieldset className=" flex flex-col gap-3 p-3">
-                <legend>Create task</legend>
+                <legend>{isEditing ? 'Edit task' : 'Create task'}</legend>
                 <input
                     name="title" 
                     placeholder="Task title"

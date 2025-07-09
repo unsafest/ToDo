@@ -128,6 +128,11 @@ export default function UserPage() {
                     >
                         Update Profile
                     </button>
+                    <button
+                        className="bg-red-500 text-white p-2 rounded hover:bg-red-600"
+                    >
+                        Delete Account
+                    </button>
                 </form>
             </div>
         </div>
