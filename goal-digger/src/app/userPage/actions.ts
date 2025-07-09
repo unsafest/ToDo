@@ -74,4 +74,36 @@ export async function updateUserProfile(formData: FormData) {
         return { error: errorMsg.trim() }
     }
     return { success: true }
+
+}
+
+export async function deleteAccount() {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+        return { error: 'User not authenticated' }
+    }
+
+    try {
+        // Delete user account using RPC
+        const { data, error } = await supabase.rpc('delete_user_account')
+
+        if (error) {
+            return { error: `Account deletion failed: ${error.message}` }
+        }
+
+        // Check the response from the RPC function
+        if (data && !data.success) {
+            return { error: data.message || 'Account deletion failed' }
+        }
+
+        // Sign out and redirect
+        await supabase.auth.signOut()
+        redirect('/login')
+
+    } catch (error) {
+        return { error: `An unexpected error occurred during account deletion: ${error instanceof Error ? error.message : 'Unknown error'}` }   
+    }
+    
 }
