@@ -72,7 +72,7 @@ export default function LoginPage() {
     {modalState === "login" && (
       <div className="fixed inset-0 bg-gradient-to-br from-blue-200 to-red-300 bg-opacity-50 flex items-center justify-center z-50">
         <div className="bg-white p-8 rounded-lg shadow-xl max-w-md w-full mx-4">
-          <form action={handleLogin} className="flex flex-col gap-4">
+          <form method="POST" action={handleLogin} className="flex flex-col gap-4">
             <h2 className="text-2xl font-bold text-center mb-4 text-gray-800">Login</h2>
             <label htmlFor="email" className="text-sm font-semibold text-gray-700">Email</label>
             <input
@@ -83,7 +83,7 @@ export default function LoginPage() {
               onChange={e => setEmail(e.target.value)}
               placeholder="johndoe@domain.com"
               required
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-gray-600 text-gray-800"
             />
             <label htmlFor="password" className="text-sm font-semibold text-gray-700">Password</label>
             <input
@@ -91,7 +91,7 @@ export default function LoginPage() {
               name="password"
               type="password"
               required
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-gray-600 text-gray-800"
             />
             <button type="submit" className="bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors font-semibold mt-2">
               Log in
@@ -112,7 +112,7 @@ export default function LoginPage() {
     {modalState === "signup" && (
       <div className="fixed inset-0 bg-gradient-to-br from-blue-200 to-red-300 bg-opacity-50 flex items-center justify-center z-50">
         <div className="bg-white p-8 rounded-lg shadow-xl max-w-md w-full mx-4">
-          <form action={handleSignup} className="flex flex-col gap-4">
+          <form method="POST" action={handleSignup} className="flex flex-col gap-4">
             <h2 className="text-2xl font-bold text-center mb-4 text-gray-800">Sign Up</h2>
             <label htmlFor="displayName" className="text-sm font-semibold text-gray-700">Display Name</label>
             <input 
@@ -123,7 +123,7 @@ export default function LoginPage() {
               onChange={e => setDisplayName(e.target.value)}
               placeholder="John Doe"
               required
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 placeholder-gray-600 text-gray-800"
             />
             <label htmlFor="email" className="text-sm font-semibold text-gray-700">Email</label>
             <input
@@ -134,7 +134,7 @@ export default function LoginPage() {
               onChange={e => setEmail(e.target.value)}
               placeholder="johndoe@domain.com"
               required 
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 placeholder-gray-600 text-gray-800"
             />
             <label htmlFor="password" className="text-sm font-semibold text-gray-700">Password</label>
             <input
@@ -143,7 +143,7 @@ export default function LoginPage() {
               type="password"
               placeholder="Choose a strong password (6-32 characters)"
               required
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 placeholder-gray-600 text-gray-800"
             />
             <button type="submit" className="bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition-colors font-semibold mt-2">
               Sign up
