@@ -24,20 +24,20 @@ export default function Header() {
     };
 
     return (
-        <header className="w-full bg-white shadow-md py-4 px-8 flex items-center justify-between mb-8">
-            <h1 className="text-2xl font-bold tracking-tight">
+        <header className="w-full max-w-5xl bg-white shadow-md py-3 px-4 sm:py-4 sm:px-6 flex items-center justify-between mb-4 sm:mb-8 rounded-lg">
+            <h1 className="text-lg sm:text-2xl font-bold tracking-tight">
                 Goal Digger
             </h1>
             <nav>
-                <ul className="flex items-center gap-6">
+                <ul className="flex items-center gap-3 sm:gap-6">
                     <li>
-                        <Link href="/" className="text-gray-700 hover:text-indigo-600 transition-colors font-medium">
+                        <Link href="/" className="text-gray-700 hover:text-indigo-600 transition-colors font-medium text-sm sm:text-base">
                             Home
                         </Link>
                     </li>
                     <li>
-                        <Link href="/userPage" className="flex items-center gap-2 text-gray-700 hover:text-indigo-600 transition-colors font-medium">
-                            <span className="inline-block rounded-full bg-indigo-100 text-indigo-600 px-3 py-1 text-xs font-semibold">
+                        <Link href="/userPage" className="flex items-center gap-1 sm:gap-2 text-gray-700 hover:text-indigo-600 transition-colors font-medium text-sm sm:text-base">
+                            <span className="inline-block rounded-full bg-indigo-100 text-indigo-600 px-2 py-1 text-xs font-semibold max-w-20 sm:max-w-none truncate">
                                 {user ? (user.user_metadata?.name ?? user.email) : "User"}
                             </span>
                         </Link>
@@ -45,7 +45,7 @@ export default function Header() {
                     <li>
                         <button
                             onClick={logout}
-                            className="text-gray-500 hover:text-red-500 transition-colors font-medium"
+                            className="text-gray-500 hover:text-red-500 transition-colors font-medium text-sm sm:text-base"
                         >
                             Log out
                         </button>

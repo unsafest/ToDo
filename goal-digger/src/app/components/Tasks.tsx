@@ -1,20 +1,29 @@
 'use client';
 import { Task } from '@/types/task';
+import { List } from '@/types/list';
 import { useState, useEffect } from 'react';
 
 interface TasksProps {
   readonly tasks: Task[]
+  readonly lists: List[]
   readonly error: string | null
   readonly onToggleTask: (taskId: string, completed: boolean) => void
   readonly onDeleteTask: (taskId: string) => void
   readonly onEditTask: (taskId: string) => void
 }
 
-export default function Tasks({ tasks, error, onToggleTask, onDeleteTask, onEditTask }: TasksProps) {
+export default function Tasks({ tasks, lists, error, onToggleTask, onDeleteTask, onEditTask }: TasksProps) {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null)
 
   const toggleDropdown = (taskId: string) => {
     setOpenDropdown(openDropdown === taskId ? null : taskId)
+  }
+
+  // Helper function to get list name by ID
+  const getListName = (listId?: string) => {
+    if (!listId) return null;
+    const list = lists.find(list => list.list_id === listId);
+    return list ? list.title : null;
   }
 
   // Close dropdown when clicking outside
@@ -35,7 +44,7 @@ export default function Tasks({ tasks, error, onToggleTask, onDeleteTask, onEdit
   }, [])
 
   return (
-    <ul className="grid grid-cols-1 gap-4 border border-gray-300 rounded-lg p-4 w-full max-w-md">
+    <ul className="grid grid-cols-1 gap-4 border border-gray-300 rounded-lg p-4 w-full">
       {tasks.length === 0 ? (
         <li className="text-center text-gray-400 py-8">
           Your tasks will appear here.
@@ -72,6 +81,11 @@ export default function Tasks({ tasks, error, onToggleTask, onDeleteTask, onEdit
               <p className="text-xs text-gray-400 mt-1">
                 Created: {new Date(task.created_at).toLocaleDateString()}
                 {task.due_date && ` — Due: ${new Date(task.due_date).toLocaleDateString()}`}
+                {getListName(task.list_id) && (
+                  <span className="inline-block ml-2 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                    📋 {getListName(task.list_id)}
+                  </span>
+                )}
               </p>
               {error && <p className="text-red-500">{error}</p>}
             </div>
