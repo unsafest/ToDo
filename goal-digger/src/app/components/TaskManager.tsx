@@ -20,7 +20,7 @@ const TaskManager = () => {
 
   // helper function to transform lists
   const availableLists = lists.map(list => ({
-    id: list.list_id,
+    id: String(list.list_id),
     name: list.title
   }));
 
@@ -63,15 +63,15 @@ const TaskManager = () => {
       try {
         const { data, error } = await supabase
           .from('lists')
-          .select('list_id, title, created_at')
+          .select('list_id, title, created_at, user_id')
           .eq('user_id', user.id);
         if (error) {
           console.error('Error fetching lists:', error);
           setError(error.message);
           return;
         }
+        console.log('Fetched lists:', data); // debug
         setLists(data || [])
-
       } catch (error) {
         console.error('Error fetching lists:', error);
         setError('Failed to load lists');
@@ -105,7 +105,7 @@ const TaskManager = () => {
     }
   }
 
-  const toggleTaskCompletion = async (taskId: number, completed: boolean) => {
+  const toggleTaskCompletion = async (taskId: string, completed: boolean) => {
     const { error } = await supabase
       .from('tasks')
       .update({ completed: !completed })
@@ -120,7 +120,7 @@ const TaskManager = () => {
     }
   }
 
-  const handleDeleteTask = async (taskId: number) => {
+  const handleDeleteTask = async (taskId: string) => {
     const { error } = await supabase
       .from('tasks')
       .delete()
@@ -133,7 +133,7 @@ const TaskManager = () => {
     }
   }
 
-  const handleEditTask = async (taskId: number) => {
+  const handleEditTask = async (taskId: string) => {
     const taskToEdit = tasks.find(task => task.task_id === taskId)
     if (taskToEdit) {
       setEditingTask(taskToEdit)

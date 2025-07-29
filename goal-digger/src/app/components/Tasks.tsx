@@ -5,15 +5,15 @@ import { useState, useEffect } from 'react';
 interface TasksProps {
   readonly tasks: Task[]
   readonly error: string | null
-  readonly onToggleTask: (taskId: number, completed: boolean) => void
-  readonly onDeleteTask: (taskId: number) => void
-  readonly onEditTask: (taskId: number) => void
+  readonly onToggleTask: (taskId: string, completed: boolean) => void
+  readonly onDeleteTask: (taskId: string) => void
+  readonly onEditTask: (taskId: string) => void
 }
 
 export default function Tasks({ tasks, error, onToggleTask, onDeleteTask, onEditTask }: TasksProps) {
-  const [openDropdown, setOpenDropdown] = useState<number | null>(null)
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null)
 
-  const toggleDropdown = (taskId: number) => {
+  const toggleDropdown = (taskId: string) => {
     setOpenDropdown(openDropdown === taskId ? null : taskId)
   }
 
@@ -98,7 +98,7 @@ export default function Tasks({ tasks, error, onToggleTask, onDeleteTask, onEdit
                     className="w-full px-3 py-2 bg-red-100 hover:bg-red-200 rounded-lg text-red-600"
                     aria-label={`Delete task ${task.title}`}
                   >
-                    Deleete
+                    Delete
                   </button>
                 </div>
               )}
