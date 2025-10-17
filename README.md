@@ -60,17 +60,52 @@ The database schema consists of two main tables: `tasks` and `lists`, both with 
 
 ## 📊 Database Schema
 
-[View Interactive Schema](https://www.drawdb.app/editor?shareId=60c201e32defdd50e207da4797dcbad2)
+The application uses a PostgreSQL database through Supabase with the following structure:
 
-**tasks**
-- User-specific tasks with completion tracking
-- Optional list assignment and due dates
-- Automatic cascade deletion when user is removed
+```
+┌─────────────────────────────────┐
+│       auth.users (Supabase)     │
+│─────────────────────────────────│
+│ id (UUID) PK                    │
+│ email                           │
+│ user_metadata                   │
+│   └─ name (display name)        │
+└─────────────────────────────────┘
+           ▲         ▲
+           │         │
+           │         │
+    ┌──────┘         └──────┐
+    │                       │
+    │                       │
+┌───┴──────────────────┐  ┌─┴────────────────────────┐
+│      lists           │  │         tasks            │
+│──────────────────────│  │──────────────────────────│
+│ list_id (UUID) PK    │  │ task_id (UUID) PK        │
+│ title (text)         │  │ title (text)             │
+│ created_at (ts)      │  │ description (text)       │
+│ user_id (UUID) FK ───┼──┤ completed (boolean)      │
+└──────────────────────┘  │ created_at (ts)          │
+           ▲              │ due_date (ts, nullable)  │
+           │              │ user_id (UUID) FK        │
+           │              │ list_id (UUID) FK ───────┘
+           │              └──────────────────────────┘
+           │                       │
+           └───────────────────────┘
 
-**lists**
-- Custom categories for organizing tasks
-- User-specific with automatic cleanup
-- Tasks become unassigned when list is deleted (ON DELETE SET NULL)
+Legend:
+  PK  = Primary Key
+  FK  = Foreign Key
+  ts  = timestamp with time zone
+  ──▶ = Foreign key relationship
+```
+
+**Key Relationships:**
+- Both `tasks` and `lists` belong to users via `user_id` → `auth.users.id`
+- Tasks can optionally belong to a list via `list_id` → `lists.list_id`
+- `auth.users` is managed entirely by Supabase Auth (not directly accessible)
+
+**Authentication**
+User authentication and user data management is handled entirely by Supabase Auth, which maintains its own `auth.users` table. The application references this table through `user_id` foreign keys but doesn't directly manage user records. User metadata (like display names) is stored in Supabase's auth system as `user_metadata`.
 
 ## 👨‍💻 Author
 
