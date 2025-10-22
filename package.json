@@ -1,7 +1,14 @@
 {
-  "dependencies": {
-    "@supabase/ssr": "^0.6.1",
-    "@supabase/supabase-js": "^2.50.0",
-    "bun": "^1.2.17"
+  "name": "todo-workspace",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "goal-digger"
+  ],
+  "scripts": {
+    "dev": "cd goal-digger && bun run dev",
+    "build": "cd goal-digger && bun run build",
+    "start": "cd goal-digger && bun run start",
+    "lint": "cd goal-digger && bun run lint"
   }
 }
