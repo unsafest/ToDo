@@ -50,52 +50,6 @@ Each user has a profile page displaying their account information including emai
 ### User Interface
 The application features a responsive design that adapts to mobile and desktop screens. It uses modal dialogs for task creation/editing, dropdown menus for task actions, and smooth transitions throughout. The interface includes custom scrollbars and maintains a clean, modern aesthetic with Tailwind CSS styling.
 
-## 🚀 Getting Started
-
-### Prerequisites
-
-- [Bun](https://bun.sh/) installed on your system
-- A [Supabase](https://supabase.com/) account and project
-
-### Installation & Setup
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/unsafest/ToDo.git
-   cd ToDo/goal-digger
-   ```
-
-2. **Install dependencies**
-   ```bash
-   bun install
-   ```
-
-3. **Configure environment variables**
-   ```bash
-   cp .env.example .env.local
-   ```
-   
-   Edit `.env.local` and add your Supabase credentials:
-   - Get your project URL and anon key from [Supabase Dashboard](https://app.supabase.com/project/_/settings/api)
-   - `NEXT_PUBLIC_SUPABASE_URL` - Your Supabase project URL
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Your Supabase anonymous key
-
-4. **Run the development server**
-   ```bash
-   bun run dev
-   ```
-
-5. **Open the app**
-   
-   Navigate to [http://localhost:3000](http://localhost:3000) in your browser.
-
-### Available Scripts
-
-- `bun run dev` - Start development server
-- `bun run build` - Build for production
-- `bun run start` - Start production server
-- `bun run lint` - Run ESLint
-
 ## 🏗️ Architecture
 
 The application follows Next.js 15's App Router architecture with a clear separation between client and server components. Client-side interactivity is handled by React components marked with `'use client'`, while server-side operations like authentication use `'use server'` directives.
